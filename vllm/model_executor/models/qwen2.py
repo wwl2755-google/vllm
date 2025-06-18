@@ -246,7 +246,7 @@ class Qwen2DecoderLayer(nn.Module):
         # Self Attention
         print(
             f"[Qwen2DecoderLayer] hidden_states shape: {hidden_states.shape}, "
-            f"first 100: {hidden_states.flatten()[:100]}, "
+            f"first 10: {hidden_states.flatten()[:10]}, "
             f"sum: {torch.sum(hidden_states).item()}"
         )
         if residual is None:
@@ -257,7 +257,7 @@ class Qwen2DecoderLayer(nn.Module):
                 hidden_states, residual)
         print(
             f"[Qwen2DecoderLayer] hidden_states after input_layernorm : shape={hidden_states.shape}, "
-            f"first 100: {hidden_states.flatten()[:100]}, "
+            f"first 10: {hidden_states.flatten()[:10]}, "
             f"sum: {torch.sum(hidden_states).item()}"
         )
         hidden_states = self.self_attn(
@@ -266,7 +266,7 @@ class Qwen2DecoderLayer(nn.Module):
         )
         print(
             f"[Qwen2DecoderLayer] hidden_states after self_attn: shape={hidden_states.shape}, "
-            f"first 100: {hidden_states.flatten()[:100]}, "
+            f"first 10: {hidden_states.flatten()[:10]}, "
             f"sum: {torch.sum(hidden_states).item()}"
         )
 
@@ -361,13 +361,13 @@ class Qwen2Model(nn.Module):
             else:
                 print(
                     f"[Qwen2Model] input_ids shape: {input_ids.shape}, "
-                    f"first 100: {input_ids.flatten()[:100]}, "
+                    f"first 10: {input_ids.flatten()[:10]}, "
                     f"sum: {torch.sum(input_ids).item()}"
                 )
                 hidden_states = self.get_input_embeddings(input_ids)
                 print(
                     f"[Qwen2Model] hidden_states after embedding: shape={hidden_states.shape}, "
-                    f"first 100: {hidden_states.flatten()[:100]}, "
+                    f"first 10: {hidden_states.flatten()[:10]}, "
                     f"sum: {torch.sum(hidden_states).item()}"
                 )
             residual = None
@@ -382,8 +382,8 @@ class Qwen2Model(nn.Module):
                 residual,
             )
 
-            # hack
-            break
+            # # hack
+            # break
 
         if not get_pp_group().is_last_rank:
             return IntermediateTensors({
@@ -514,6 +514,11 @@ class Qwen2ForCausalLM(nn.Module, SupportsLoRA, SupportsPP):
     ) -> Optional[torch.Tensor]:
         logits = self.logits_processor(self.lm_head, hidden_states,
                                        sampling_metadata)
+        print(
+                    f"[Qwen2ForCausalLM] final_logits shape: {logits.shape}, "
+                    f"first 10: {logits.flatten()[:10]}, "
+                    f"sum: {torch.sum(logits).item()}"
+                )
         return logits
 
     def load_weights(self, weights: Iterable[tuple[str,
