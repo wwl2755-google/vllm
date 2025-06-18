@@ -245,13 +245,15 @@ class Qwen2DecoderLayer(nn.Module):
         positions: torch.Tensor,
         hidden_states: torch.Tensor,
         residual: Optional[torch.Tensor],
+        layer_idx: int,
     ) -> tuple[torch.Tensor, torch.Tensor]:
         # Self Attention
         logger.info(
-            "[Qwen2DecoderLayer] hidden_states before input_layernorm:\n"
+            "[Qwen2DecoderLayer %d] hidden_states before input_layernorm:\n"
             "  shape: %s\n"
             "  first 10: %s\n"
             "  sum: %s",
+            layer_idx,
             hidden_states.shape,
             hidden_states.flatten()[:10].tolist(),
             torch.sum(hidden_states).item(),
@@ -263,10 +265,11 @@ class Qwen2DecoderLayer(nn.Module):
             hidden_states, residual = self.input_layernorm(
                 hidden_states, residual)
         logger.info(
-            "[Qwen2DecoderLayer] hidden_states after input_layernorm:\n"
+            "[Qwen2DecoderLayer %d] hidden_states after input_layernorm:\n"
             "  shape: %s\n"
             "  first 10: %s\n"
             "  sum: %s",
+            layer_idx,
             hidden_states.shape,
             hidden_states.flatten()[:10].tolist(),
             torch.sum(hidden_states).item(),
@@ -276,10 +279,11 @@ class Qwen2DecoderLayer(nn.Module):
             hidden_states=hidden_states,
         )
         logger.info(
-            "[Qwen2DecoderLayer] hidden_states after self_attn:\n"
+            "[Qwen2DecoderLayer %d] hidden_states after self_attn:\n"
             "  shape: %s\n"
             "  first 10: %s\n"
             "  sum: %s",
+            layer_idx,
             hidden_states.shape,
             hidden_states.flatten()[:10].tolist(),
             torch.sum(hidden_states).item(),
@@ -398,11 +402,13 @@ class Qwen2Model(nn.Module):
             assert intermediate_tensors is not None
             hidden_states = intermediate_tensors["hidden_states"]
             residual = intermediate_tensors["residual"]
-        for layer in self.layers[self.start_layer:self.end_layer]:
+        for i, layer_idx in enumerate(range(self.start_layer, self.end_layer)):
+            layer = self.layers[i]
             hidden_states, residual = layer(
                 positions,
                 hidden_states,
                 residual,
+                layer_idx,
             )
 
             # # hack
