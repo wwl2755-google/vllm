@@ -512,6 +512,11 @@ class Qwen2ForCausalLM(nn.Module, SupportsLoRA, SupportsPP):
         hidden_states: torch.Tensor,
         sampling_metadata: SamplingMetadata,
     ) -> Optional[torch.Tensor]:
+        print(
+                    f"[Qwen2ForCausalLM] hidden_states (before lm_head) shape: {hidden_states.shape}, "
+                    f"first 10: {hidden_states.flatten()[:10]}, "
+                    f"sum: {torch.sum(hidden_states).item()}"
+                )
         logits = self.logits_processor(self.lm_head, hidden_states,
                                        sampling_metadata)
         print(
