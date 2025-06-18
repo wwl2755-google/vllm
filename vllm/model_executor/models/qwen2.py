@@ -30,6 +30,7 @@ from typing import Any, Optional, Union
 import torch
 from torch import nn
 from transformers import Qwen2Config
+from vllm.logger import init_logger
 
 from vllm.attention import Attention, AttentionType
 from vllm.compilation.decorators import support_torch_compile
@@ -55,6 +56,8 @@ from .utils import (AutoWeightsLoader, PPMissingLayer, extract_layer_index,
                     is_pp_missing_parameter,
                     make_empty_intermediate_tensors_factory, make_layers,
                     maybe_prefix)
+
+logger = init_logger(__name__)
 
 
 class Qwen2MLP(nn.Module):
@@ -244,10 +247,14 @@ class Qwen2DecoderLayer(nn.Module):
         residual: Optional[torch.Tensor],
     ) -> tuple[torch.Tensor, torch.Tensor]:
         # Self Attention
-        print(
-            f"[Qwen2DecoderLayer] hidden_states shape: {hidden_states.shape}, "
-            f"first 10: {hidden_states.flatten()[:10]}, "
-            f"sum: {torch.sum(hidden_states).item()}"
+        logger.info(
+            "[Qwen2DecoderLayer] hidden_states before input_layernorm:\n"
+            "  shape: %s\n"
+            "  first 10: %s\n"
+            "  sum: %s",
+            hidden_states.shape,
+            hidden_states.flatten()[:10].tolist(),
+            torch.sum(hidden_states).item(),
         )
         if residual is None:
             residual = hidden_states
@@ -255,19 +262,27 @@ class Qwen2DecoderLayer(nn.Module):
         else:
             hidden_states, residual = self.input_layernorm(
                 hidden_states, residual)
-        print(
-            f"[Qwen2DecoderLayer] hidden_states after input_layernorm : shape={hidden_states.shape}, "
-            f"first 10: {hidden_states.flatten()[:10]}, "
-            f"sum: {torch.sum(hidden_states).item()}"
+        logger.info(
+            "[Qwen2DecoderLayer] hidden_states after input_layernorm:\n"
+            "  shape: %s\n"
+            "  first 10: %s\n"
+            "  sum: %s",
+            hidden_states.shape,
+            hidden_states.flatten()[:10].tolist(),
+            torch.sum(hidden_states).item(),
         )
         hidden_states = self.self_attn(
             positions=positions,
             hidden_states=hidden_states,
         )
-        print(
-            f"[Qwen2DecoderLayer] hidden_states after self_attn: shape={hidden_states.shape}, "
-            f"first 10: {hidden_states.flatten()[:10]}, "
-            f"sum: {torch.sum(hidden_states).item()}"
+        logger.info(
+            "[Qwen2DecoderLayer] hidden_states after self_attn:\n"
+            "  shape: %s\n"
+            "  first 10: %s\n"
+            "  sum: %s",
+            hidden_states.shape,
+            hidden_states.flatten()[:10].tolist(),
+            torch.sum(hidden_states).item(),
         )
 
         # Fully Connected
@@ -359,16 +374,24 @@ class Qwen2Model(nn.Module):
             if inputs_embeds is not None:
                 hidden_states = inputs_embeds
             else:
-                print(
-                    f"[Qwen2Model] input_ids shape: {input_ids.shape}, "
-                    f"first 10: {input_ids.flatten()[:10]}, "
-                    f"sum: {torch.sum(input_ids).item()}"
+                logger.info(
+                    "[Qwen2Model] input_ids:\n"
+                    "  shape: %s\n"
+                    "  first 10: %s\n"
+                    "  sum: %s",
+                    input_ids.shape,
+                    input_ids.flatten()[:10].tolist(),
+                    torch.sum(input_ids).item(),
                 )
                 hidden_states = self.get_input_embeddings(input_ids)
-                print(
-                    f"[Qwen2Model] hidden_states after embedding: shape={hidden_states.shape}, "
-                    f"first 10: {hidden_states.flatten()[:10]}, "
-                    f"sum: {torch.sum(hidden_states).item()}"
+                logger.info(
+                    "[Qwen2Model] hidden_states after embedding:\n"
+                    "  shape: %s\n"
+                    "  first 10: %s\n"
+                    "  sum: %s",
+                    hidden_states.shape,
+                    hidden_states.flatten()[:10].tolist(),
+                    torch.sum(hidden_states).item(),
                 )
             residual = None
         else:
@@ -512,18 +535,26 @@ class Qwen2ForCausalLM(nn.Module, SupportsLoRA, SupportsPP):
         hidden_states: torch.Tensor,
         sampling_metadata: SamplingMetadata,
     ) -> Optional[torch.Tensor]:
-        print(
-                    f"[Qwen2ForCausalLM] hidden_states (before lm_head) shape: {hidden_states.shape}, "
-                    f"first 10: {hidden_states.flatten()[:10]}, "
-                    f"sum: {torch.sum(hidden_states).item()}"
-                )
+        logger.info(
+            "[Qwen2ForCausalLM] hidden_states (before lm_head):\n"
+            "  shape: %s\n"
+            "  first 10: %s\n"
+            "  sum: %s",
+            hidden_states.shape,
+            hidden_states.flatten()[:10].tolist(),
+            torch.sum(hidden_states).item(),
+        )
         logits = self.logits_processor(self.lm_head, hidden_states,
                                        sampling_metadata)
-        print(
-                    f"[Qwen2ForCausalLM] final_logits shape: {logits.shape}, "
-                    f"first 10: {logits.flatten()[:10]}, "
-                    f"sum: {torch.sum(logits).item()}"
-                )
+        logger.info(
+            "[Qwen2ForCausalLM] final_logits:\n"
+            "  shape: %s\n"
+            "  first 10: %s\n"
+            "  sum: %s",
+            logits.shape,
+            logits.flatten()[:10].tolist(),
+            torch.sum(logits).item(),
+        )
         return logits
 
     def load_weights(self, weights: Iterable[tuple[str,
