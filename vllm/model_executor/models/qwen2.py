@@ -244,15 +244,30 @@ class Qwen2DecoderLayer(nn.Module):
         residual: Optional[torch.Tensor],
     ) -> tuple[torch.Tensor, torch.Tensor]:
         # Self Attention
+        print(
+            f"[Qwen2DecoderLayer] hidden_states shape: {hidden_states.shape}, "
+            f"first 100: {hidden_states.flatten()[:100]}, "
+            f"sum: {torch.sum(hidden_states).item()}"
+        )
         if residual is None:
             residual = hidden_states
             hidden_states = self.input_layernorm(hidden_states)
         else:
             hidden_states, residual = self.input_layernorm(
                 hidden_states, residual)
+        print(
+            f"[Qwen2DecoderLayer] hidden_states after input_layernorm : shape={hidden_states.shape}, "
+            f"first 100: {hidden_states.flatten()[:100]}, "
+            f"sum: {torch.sum(hidden_states).item()}"
+        )
         hidden_states = self.self_attn(
             positions=positions,
             hidden_states=hidden_states,
+        )
+        print(
+            f"[Qwen2DecoderLayer] hidden_states after self_attn: shape={hidden_states.shape}, "
+            f"first 100: {hidden_states.flatten()[:100]}, "
+            f"sum: {torch.sum(hidden_states).item()}"
         )
 
         # Fully Connected
@@ -344,7 +359,17 @@ class Qwen2Model(nn.Module):
             if inputs_embeds is not None:
                 hidden_states = inputs_embeds
             else:
+                print(
+                    f"[Qwen2Model] input_ids shape: {input_ids.shape}, "
+                    f"first 100: {input_ids.flatten()[:100]}, "
+                    f"sum: {torch.sum(input_ids).item()}"
+                )
                 hidden_states = self.get_input_embeddings(input_ids)
+                print(
+                    f"[Qwen2Model] hidden_states after embedding: shape={hidden_states.shape}, "
+                    f"first 100: {hidden_states.flatten()[:100]}, "
+                    f"sum: {torch.sum(hidden_states).item()}"
+                )
             residual = None
         else:
             assert intermediate_tensors is not None
@@ -356,6 +381,10 @@ class Qwen2Model(nn.Module):
                 hidden_states,
                 residual,
             )
+
+            # hack
+            break
+
         if not get_pp_group().is_last_rank:
             return IntermediateTensors({
                 "hidden_states": hidden_states,
