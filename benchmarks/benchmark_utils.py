@@ -128,11 +128,36 @@ def eval_accuracy_mmlu(request_outputs: List[RequestFuncOutput]) -> dict:
     nltk.download("punkt_tab")
     preds = []
     targets = []
+    raw_preds = []
+    raw_targets = []
 
     for output in request_outputs:
         preds.append(output.generated_text)
         targets.append(output.input_request.completion)
-    preds, targets = postprocess_text_mmlu(preds, targets)
+
+        raw_preds.append(output.generated_text)
+        raw_targets.append(output.input_request.completion)
+
+        preds, targets = postprocess_text_mmlu(preds, targets)
+
+    print("\n--- Generated vs. Target ---")
+    for i, (pred, target, output) in enumerate(
+            zip(raw_preds, raw_targets, request_outputs)):
+        print(f"Sample {i+1}:")
+        print(f"  Prompt:    '{output.input_request.prompt}'")
+        print(f"  Generated: '{pred.strip()}'")
+        print(f"  Target:    '{target.strip()}'")
+    print("--------------------------\n")
+
+    print("\n--- Generated vs. Target (After postprocessing)---")
+    for i, (pred, target, output) in enumerate(
+            zip(preds, targets, request_outputs)):
+        print(f"Sample {i+1}:")
+        print(f"  Prompt:    '{output.input_request.prompt}'")
+        print(f"  Generated: '{pred.strip()}'")
+        print(f"  Target:    '{target.strip()}'")
+    print("--------------------------\n")
+    
     result = metric.compute(
         predictions=preds,
         references=targets,
