@@ -138,7 +138,7 @@ def eval_accuracy_mmlu(request_outputs: List[RequestFuncOutput]) -> dict:
         raw_preds.append(output.generated_text)
         raw_targets.append(output.input_request.completion)
 
-        preds, targets = postprocess_text_mmlu(preds, targets)
+    preds, targets = postprocess_text_mmlu(preds, targets)
 
     print("\n--- Generated vs. Target ---")
     for i, (pred, target, output) in enumerate(
