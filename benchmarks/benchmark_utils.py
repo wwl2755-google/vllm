@@ -154,8 +154,8 @@ def eval_accuracy_mmlu(request_outputs: List[RequestFuncOutput]) -> dict:
             zip(preds, targets, request_outputs)):
         print(f"Sample {i+1}:")
         print(f"  Prompt:    '{output.input_request.prompt}'")
-        print(f"  Generated: '{pred.strip()}'")
-        print(f"  Target:    '{target.strip()}'")
+        print(f"  Generated: '{pred}'")
+        print(f"  Target:    '{target}'")
     print("--------------------------\n")
     
     result = metric.compute(
