@@ -44,7 +44,7 @@ def main(args: dict):
     # Generate texts from the prompts. The output is a list of RequestOutput
     # objects that contain the prompt, generated text, and other information.
     prompts = [
-        "Hello, my name is",
+        "The capital of France is",
     ]
     outputs = llm.generate(prompts, sampling_params)
     # Print the outputs.

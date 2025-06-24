@@ -245,48 +245,17 @@ class Qwen2DecoderLayer(nn.Module):
         positions: torch.Tensor,
         hidden_states: torch.Tensor,
         residual: Optional[torch.Tensor],
-        layer_idx: int,
     ) -> tuple[torch.Tensor, torch.Tensor]:
         # Self Attention
-        logger.info(
-            "[Qwen2DecoderLayer %d] hidden_states before input_layernorm:\n"
-            "  shape: %s\n"
-            "  first 10: %s\n"
-            "  sum: %s",
-            layer_idx,
-            hidden_states.shape,
-            hidden_states.flatten()[:10].tolist(),
-            torch.sum(hidden_states).item(),
-        )
         if residual is None:
             residual = hidden_states
             hidden_states = self.input_layernorm(hidden_states)
         else:
             hidden_states, residual = self.input_layernorm(
                 hidden_states, residual)
-        logger.info(
-            "[Qwen2DecoderLayer %d] hidden_states after input_layernorm:\n"
-            "  shape: %s\n"
-            "  first 10: %s\n"
-            "  sum: %s",
-            layer_idx,
-            hidden_states.shape,
-            hidden_states.flatten()[:10].tolist(),
-            torch.sum(hidden_states).item(),
-        )
         hidden_states = self.self_attn(
             positions=positions,
             hidden_states=hidden_states,
-        )
-        logger.info(
-            "[Qwen2DecoderLayer %d] hidden_states after self_attn:\n"
-            "  shape: %s\n"
-            "  first 10: %s\n"
-            "  sum: %s",
-            layer_idx,
-            hidden_states.shape,
-            hidden_states.flatten()[:10].tolist(),
-            torch.sum(hidden_states).item(),
         )
 
         # Fully Connected
@@ -378,37 +347,28 @@ class Qwen2Model(nn.Module):
             if inputs_embeds is not None:
                 hidden_states = inputs_embeds
             else:
-                logger.info(
-                    "[Qwen2Model] input_ids:\n"
-                    "  shape: %s\n"
-                    "  first 10: %s\n"
-                    "  sum: %s",
-                    input_ids.shape,
-                    input_ids.flatten()[:10].tolist(),
-                    torch.sum(input_ids).item(),
-                )
                 hidden_states = self.get_input_embeddings(input_ids)
-                logger.info(
-                    "[Qwen2Model] hidden_states after embedding:\n"
-                    "  shape: %s\n"
-                    "  first 10: %s\n"
-                    "  sum: %s",
-                    hidden_states.shape,
-                    hidden_states.flatten()[:10].tolist(),
-                    torch.sum(hidden_states).item(),
-                )
             residual = None
         else:
             assert intermediate_tensors is not None
             hidden_states = intermediate_tensors["hidden_states"]
             residual = intermediate_tensors["residual"]
-        for i, layer_idx in enumerate(range(self.start_layer, self.end_layer)):
+        for i in enumerate(range(self.start_layer, self.end_layer)):
             layer = self.layers[i]
             hidden_states, residual = layer(
                 positions,
                 hidden_states,
                 residual,
-                layer_idx,
+            )
+            logger.info(
+                "[Qwen2Model] hidden_states after layer %d:\n"
+                "  shape: %s\n"
+                "  first 10: %s\n"
+                "  sum: %s",
+                i,
+                hidden_states.shape,
+                hidden_states.flatten()[:10].tolist(),
+                torch.sum(hidden_states).item(),
             )
 
             # # hack
@@ -541,26 +501,8 @@ class Qwen2ForCausalLM(nn.Module, SupportsLoRA, SupportsPP):
         hidden_states: torch.Tensor,
         sampling_metadata: SamplingMetadata,
     ) -> Optional[torch.Tensor]:
-        logger.info(
-            "[Qwen2ForCausalLM] hidden_states (before lm_head):\n"
-            "  shape: %s\n"
-            "  first 10: %s\n"
-            "  sum: %s",
-            hidden_states.shape,
-            hidden_states.flatten()[:10].tolist(),
-            torch.sum(hidden_states).item(),
-        )
         logits = self.logits_processor(self.lm_head, hidden_states,
                                        sampling_metadata)
-        logger.info(
-            "[Qwen2ForCausalLM] final_logits:\n"
-            "  shape: %s\n"
-            "  first 10: %s\n"
-            "  sum: %s",
-            logits.shape,
-            logits.flatten()[:10].tolist(),
-            torch.sum(logits).item(),
-        )
         return logits
 
     def load_weights(self, weights: Iterable[tuple[str,
