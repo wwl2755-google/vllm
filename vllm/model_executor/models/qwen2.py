@@ -367,7 +367,7 @@ class Qwen2Model(nn.Module):
                     "  shape: %s\n"
                     "  first 10: %s\n"
                     "  sum: %s",
-                    i,
+                    i-1,
                     layer_output.shape,
                     layer_output.flatten()[:10].tolist(),
                     torch.sum(layer_output).item(),
