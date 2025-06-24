@@ -354,21 +354,30 @@ class Qwen2Model(nn.Module):
             hidden_states = intermediate_tensors["hidden_states"]
             residual = intermediate_tensors["residual"]
         for i in range(self.start_layer, self.end_layer):
+            # The full, un-normalized output of the previous layer (i-1) is the
+            # sum of the residual and the hidden_states from that layer's
+            # output. This is the ideal point for a layer-wise comparison.
+            if residual is not None:
+                layer_output = hidden_states + residual
+                # You can log or inspect `layer_output` here.
+                # For example:
+                # logger.info(f"Output of layer {i-1}: {layer_output.mean()}")
+                logger.info(
+                    "[Qwen2Model] hidden_states after layer %d (after adding residual):\n"
+                    "  shape: %s\n"
+                    "  first 10: %s\n"
+                    "  sum: %s",
+                    i,
+                    layer_output.shape,
+                    layer_output.flatten()[:10].tolist(),
+                    torch.sum(layer_output).item(),
+                )
+
             layer = self.layers[i]
             hidden_states, residual = layer(
                 positions,
                 hidden_states,
                 residual,
-            )
-            logger.info(
-                "[Qwen2Model] hidden_states after layer %d:\n"
-                "  shape: %s\n"
-                "  first 10: %s\n"
-                "  sum: %s",
-                i,
-                hidden_states.shape,
-                hidden_states.flatten()[:10].tolist(),
-                torch.sum(hidden_states).item(),
             )
 
             # # hack
