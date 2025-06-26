@@ -76,6 +76,8 @@ class KVCacheManager:
         log_stats: bool = False,
         enable_kv_cache_events: bool = False,
     ) -> None:
+        logger.info("KV cache manager is initialized.")
+
         self.max_model_len = max_model_len
 
         self.enable_caching = enable_caching
