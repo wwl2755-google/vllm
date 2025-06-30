@@ -113,6 +113,13 @@ def main(args: dict):
     if top_k is not None:
         sampling_params.top_k = top_k
 
+    # Simulate a prompt with similar length
+    get_generation_time(
+        llm,
+        sampling_params,
+        "This Question: what is the age of",
+    )
+
     # Querying the age of John Doe
     get_generation_time(
         llm,
