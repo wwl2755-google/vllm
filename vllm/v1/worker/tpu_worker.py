@@ -307,9 +307,9 @@ class TPUWorker:
             parallel_config.pipeline_parallel_size)
 
 
-try:
-    from tpu_commons.worker import TPUWorker as TPUCommonsWorker
-    TPUWorker = TPUCommonsWorker  # type: ignore
-except ImportError:
-    logger.info("tpu_commons not found, using vLLM's TPUWorker.")
-    pass
+# try:
+#     from tpu_commons.worker import TPUWorker as TPUCommonsWorker
+#     TPUWorker = TPUCommonsWorker  # type: ignore
+# except ImportError:
+#     logger.info("tpu_commons not found, using vLLM's TPUWorker.")
+#     pass
