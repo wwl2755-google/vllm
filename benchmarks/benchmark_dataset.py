@@ -612,6 +612,11 @@ class SonnetDataset(BenchmarkDataset):
                         expected_output_len=output_len,
                     )
                 )
+        import time
+        log_filename = f"sonnet_prompts_{int(time.time())}.log"
+        with open(log_filename, "w", encoding="utf-8") as f:
+            for sample in samples:
+                f.write(json.dumps({"prompt": sample.prompt}) + "\n")
         return samples
 
 
