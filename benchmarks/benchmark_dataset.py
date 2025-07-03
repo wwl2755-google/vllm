@@ -594,6 +594,7 @@ class SonnetDataset(BenchmarkDataset):
         prefix_lines = self.data[:num_prefix_lines]
 
         samples = []
+        all_extra_lines = []
         while len(samples) < num_requests:
             extra_lines = random.choices(
                 self.data, k=num_input_lines - num_prefix_lines
@@ -605,6 +606,7 @@ class SonnetDataset(BenchmarkDataset):
             )
             prompt_len = len(tokenizer(prompt_formatted).input_ids)
             if prompt_len <= input_len:
+                all_extra_lines.append(extra_lines)
                 samples.append(
                     SampleRequest(
                         prompt=prompt_formatted if return_prompt_formatted else prompt,
@@ -612,11 +614,13 @@ class SonnetDataset(BenchmarkDataset):
                         expected_output_len=output_len,
                     )
                 )
-        import time
-        log_filename = f"sonnet_prompts_{int(time.time())}.log"
+        # HACK: Log prompts to a separate file for debugging.
+        # Each run will create a new file with a unique timestamp.
+        from datetime import datetime
+        log_filename = f"sonnet_prompts_{datetime.now().strftime('%Y%m%d-%H%M%S')}.log"
         with open(log_filename, "w", encoding="utf-8") as f:
-            for sample in samples:
-                f.write(json.dumps({"prompt": sample.prompt}) + "\n")
+            for lines in all_extra_lines:
+                f.write(json.dumps({"extra_lines": lines}) + "\n")
         return samples
 
 
