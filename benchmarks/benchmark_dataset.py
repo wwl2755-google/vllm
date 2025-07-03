@@ -617,7 +617,7 @@ class SonnetDataset(BenchmarkDataset):
         # HACK: Log prompts to a separate file for debugging.
         # Each run will create a new file with a unique timestamp.
         from datetime import datetime
-        log_filename = f"sonnet_prompts_{datetime.now().strftime('%Y%m%d-%H%M%S')}.log"
+        log_filename = f"sonnet_prompts_ptxla_{datetime.now().strftime('%Y%m%d-%H%M%S')}.log"
         with open(log_filename, "w", encoding="utf-8") as f:
             for lines in all_extra_lines:
                 f.write(json.dumps({"extra_lines": lines}) + "\n")
