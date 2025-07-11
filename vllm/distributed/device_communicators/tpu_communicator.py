@@ -94,10 +94,10 @@ class TpuCommunicator(DeviceCommunicatorBase):
         return xm.all_gather(input_, dim=dim)
 
 
-try:
-    from tpu_commons.distributed.device_communicators import (
-        TpuCommunicator as TpuCommonsCommunicator)
-    TpuCommunicator = TpuCommonsCommunicator  # type: ignore
-except ImportError:
-    logger.info("tpu_commons not found, using vLLM's TpuCommunicator")
-    pass
+# try:
+#     from tpu_commons.distributed.device_communicators import (
+#         TpuCommunicator as TpuCommonsCommunicator)
+#     TpuCommunicator = TpuCommonsCommunicator  # type: ignore
+# except ImportError:
+#     logger.info("tpu_commons not found, using vLLM's TpuCommunicator")
+#     pass
