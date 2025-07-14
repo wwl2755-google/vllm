@@ -424,7 +424,7 @@ def run_llava(questions: list[str], modality: str) -> ModelRequestData:
     prompts = [f"USER: <image>\n{question}\nASSISTANT:" for question in questions]
 
     engine_args = EngineArgs(
-        model="llava-hf/llava-1.5-7b-hf",
+        model="/mnt/disks/data/llava-hf/llava-1.5-7b-hf",
         max_model_len=4096,
         limit_mm_per_prompt={modality: 1},
     )
