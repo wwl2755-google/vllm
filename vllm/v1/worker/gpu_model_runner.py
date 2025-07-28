@@ -1310,6 +1310,13 @@ class GPUModelRunner(LoRAModelRunnerMixin):
 
             # Return empty ModelRunnerOutput if there's no work to do.
             return EMPTY_MODEL_RUNNER_OUTPUT
+        
+        # DEBUG:
+        print(f"[DEBUG] Number of requests: {len(scheduler_output.num_scheduled_tokens)}")
+        print(f"[DEBUG] Total scheduled tokens: {scheduler_output.total_num_scheduled_tokens}")
+        for req_id, num_tokens in scheduler_output.num_scheduled_tokens.items():
+            print(f"[DEBUG] Number of scheduled tokens for request {req_id}: {num_tokens}")
+
 
         # Prepare the decoder inputs.
         (attn_metadata, attention_cuda_graphs, logits_indices,
@@ -1317,6 +1324,23 @@ class GPUModelRunner(LoRAModelRunnerMixin):
          spec_decode_common_attn_metadata) = (
              self._prepare_inputs(scheduler_output))
         num_scheduled_tokens = scheduler_output.total_num_scheduled_tokens
+
+        # DEBUG
+        print(f"[DEBUG] After _prepare_inputs")
+        print(f"  - num_scheduled_tokens: {num_scheduled_tokens}")
+        print(f"  - num_scheduled_tokens_np: {num_scheduled_tokens_np}")
+        print(f"  - input_ids shape: {self.input_ids[:num_scheduled_tokens].shape}")
+        print(f"  - input_ids content: {self.input_ids[:num_scheduled_tokens]}")
+        print(f"  - positions shape: {self.positions[:num_scheduled_tokens].shape}")
+        print(f"  - positions content: {self.positions[:num_scheduled_tokens]}")
+        print(f"  - logits_indices: {logits_indices}")
+        print(f"[DEBUG] Input batch state:")
+        print(f"  - num_reqs: {self.input_batch.num_reqs}")
+        print(f"  - req_ids: {self.input_batch.req_ids}")
+
+
+
+
         if (self.use_cuda_graph
                 and num_scheduled_tokens <= self.cudagraph_batch_sizes[-1]):
             # Use piecewise CUDA graphs.
@@ -1360,6 +1384,12 @@ class GPUModelRunner(LoRAModelRunnerMixin):
             self.inputs_embeds[:num_scheduled_tokens].copy_(inputs_embeds)
             inputs_embeds = self.inputs_embeds[:num_input_tokens]
             input_ids = None
+
+            print(f"[DEBUG] Using embeddings for multimodal model:")
+            print(f"  - input_embeds shape: {inputs_embeds.shape}")
+            print(f"  - input_embeds dtype: {inputs_embeds.dtype}")
+            print(f"  - input_embeds content: {inputs_embeds}")
+        
         else:
             # For text-only models, we use token ids as input.
             # While it is possible to use embeddings as input just like the
@@ -1369,6 +1399,11 @@ class GPUModelRunner(LoRAModelRunnerMixin):
             inputs_embeds = None
         if self.uses_mrope:
             positions = self.mrope_positions[:, :num_input_tokens]
+
+            print(f"[DEBUG] Using mrope positions:")
+            print(f"  - positions shape: {positions.shape}")
+            print(f"  - positions dtype: {positions.dtype}")
+            print(f"  - positions content: {positions}")
         else:
             positions = self.positions[:num_input_tokens]
 
@@ -1382,6 +1417,12 @@ class GPUModelRunner(LoRAModelRunnerMixin):
         # If attention doesn't support CUDA Graphs for this batch, but we
         # compiled with full CUDA graphs, we have to skip them entirely.
         skip_cuda_graphs = self.full_cuda_graph and not attention_cuda_graphs
+
+
+        print(f"[DEBUG] Final model inputs:")
+        print(f"  - input_ids shape: {input_ids.shape if input_ids is not None else None}")
+        print(f"  - positions: {positions.shape}")
+        print(f"  - inputs_embeds: {inputs_embeds if inputs_embeds is not None else None}")
 
         # Run the model.
         # Use persistent buffers for CUDA graphs.
@@ -1408,6 +1449,11 @@ class GPUModelRunner(LoRAModelRunnerMixin):
         else:
             hidden_states = model_output
             aux_hidden_states = None
+
+        print(f"[DEBUG] Model output:")
+        print(f"  - hidden_states shape: {hidden_states.shape}")
+        print(f"  - hidden_states dtype: {hidden_states.dtype}")
+        print(f"  - hidden_states content: {hidden_states}")
 
         # Broadcast PP output for external_launcher (torchrun)
         # to make sure we are synced across pp ranks
