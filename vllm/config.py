@@ -2543,9 +2543,11 @@ class SchedulerConfig:
 
     def __post_init__(self) -> None:
         if self.max_model_len is None:
+            print(f"max_model_len is set to 8192 by default.")
             self.max_model_len = 8192
 
         if self.max_num_seqs is None:
+            print(f"max_num_seqs is set to 128 by default.")
             self.max_num_seqs = 128
 
         if self.max_num_batched_tokens is None:
@@ -2560,6 +2562,7 @@ class SchedulerConfig:
                 else:
                     self.max_num_batched_tokens = (
                         DEFAULT_MAX_NUM_BATCHED_TOKENS)
+                    print(f"max_num_batched_tokens is set here 1.")
             else:
                 # If max_model_len is too short, use
                 # DEFAULT_MAX_NUM_BATCHED_TOKENS as the default value
@@ -2579,6 +2582,8 @@ class SchedulerConfig:
                     self.max_num_batched_tokens,
                     MULTIMODAL_MODEL_MAX_NUM_BATCHED_TOKENS,
                 )
+                print(f"max_num_batched_tokens is set here 2.")
+
 
             # When using default settings,
             # Ensure max_num_batched_tokens does not exceed model limit.
@@ -2586,6 +2591,7 @@ class SchedulerConfig:
             self.max_num_batched_tokens = min(
                 self.max_num_seqs * self.max_model_len,
                 self.max_num_batched_tokens)
+            print(f"max_num_batched_tokens is set here 3")
 
         self.max_num_encoder_input_tokens = self.max_num_batched_tokens
         self.encoder_cache_size = self.max_num_batched_tokens
