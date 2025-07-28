@@ -1479,6 +1479,23 @@ class GPUModelRunner(LoRAModelRunnerMixin, KVConnectorModelRunnerMixin):
              self._prepare_inputs(scheduler_output))
 
         num_scheduled_tokens = scheduler_output.total_num_scheduled_tokens
+
+        # DEBUG
+        print(f"[DEBUG] After _prepare_inputs")
+        print(f"  - num_scheduled_tokens: {num_scheduled_tokens}")
+        print(f"  - num_scheduled_tokens_np: {num_scheduled_tokens_np}")
+        print(f"  - input_ids shape: {self.input_ids[:num_scheduled_tokens].shape}")
+        print(f"  - input_ids content: {self.input_ids[:num_scheduled_tokens]}")
+        print(f"  - positions shape: {self.positions[:num_scheduled_tokens].shape}")
+        print(f"  - positions content: {self.positions[:num_scheduled_tokens]}")
+        print(f"  - logits_indices: {logits_indices}")
+        print(f"[DEBUG] Input batch state:")
+        print(f"  - num_reqs: {self.input_batch.num_reqs}")
+        print(f"  - req_ids: {self.input_batch.req_ids}")
+
+
+
+
         if (self.use_cuda_graph
                 and num_scheduled_tokens <= self.cudagraph_batch_sizes[-1]):
             # Use piecewise CUDA graphs.
@@ -1535,6 +1552,11 @@ class GPUModelRunner(LoRAModelRunnerMixin, KVConnectorModelRunnerMixin):
             model_mm_kwargs = {}
         if self.uses_mrope:
             positions = self.mrope_positions[:, :num_input_tokens]
+
+            print(f"[DEBUG] Using mrope positions:")
+            print(f"  - positions shape: {positions.shape}")
+            print(f"  - positions dtype: {positions.dtype}")
+            print(f"  - positions content: {positions}")
         else:
             positions = self.positions[:num_input_tokens]
 
@@ -1548,6 +1570,12 @@ class GPUModelRunner(LoRAModelRunnerMixin, KVConnectorModelRunnerMixin):
         # If attention doesn't support CUDA Graphs for this batch, but we
         # compiled with full CUDA graphs, we have to skip them entirely.
         skip_cuda_graphs = self.full_cuda_graph and not attention_cuda_graphs
+
+
+        print(f"[DEBUG] Final model inputs:")
+        print(f"  - input_ids shape: {input_ids.shape if input_ids is not None else None}")
+        print(f"  - positions: {positions.shape}")
+        print(f"  - inputs_embeds: {inputs_embeds if inputs_embeds is not None else None}")
 
         # Run the model.
         # Use persistent buffers for CUDA graphs.
@@ -1576,6 +1604,11 @@ class GPUModelRunner(LoRAModelRunnerMixin, KVConnectorModelRunnerMixin):
         else:
             hidden_states = model_output
             aux_hidden_states = None
+
+        print(f"[DEBUG] Model output:")
+        print(f"  - hidden_states shape: {hidden_states.shape}")
+        print(f"  - hidden_states dtype: {hidden_states.dtype}")
+        print(f"  - hidden_states content: {hidden_states}")
 
         # Broadcast PP output for external_launcher (torchrun)
         # to make sure we are synced across pp ranks
