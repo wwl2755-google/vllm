@@ -1523,6 +1523,12 @@ class GPUModelRunner(LoRAModelRunnerMixin, KVConnectorModelRunnerMixin):
             # Run the multimodal encoder if any.
             self._execute_mm_encoder(scheduler_output)
             mm_embeds = self._gather_mm_embeddings(scheduler_output)
+
+            print(f"[DEBUG] Multimodal embeddings: {len(mm_embeds)} items")
+            for i, mm_embed in enumerate(mm_embeds):
+                print(f"  - mm_embed {i} shape: {mm_embed.shape}")
+                print(f"  - mm_embed {i} dtype: {mm_embed.dtype}")
+                print(f"  - mm_embed {i} content: {mm_embed}")
         else:
             mm_embeds = []
 
