@@ -71,6 +71,7 @@ from ..sample.logits_processor import LogitsProcessorManager
 from .utils import (bind_kv_cache, gather_mm_placeholders,
                     initialize_kv_cache_for_kv_sharing,
                     sanity_check_mm_encoder_outputs, scatter_mm_placeholders)
+from vllm.logging_utils.dump_input import dump_engine_exception
 
 if TYPE_CHECKING:
     import xgrammar as xgr
@@ -1302,6 +1303,8 @@ class GPUModelRunner(LoRAModelRunnerMixin):
         scheduler_output: "SchedulerOutput",
         intermediate_tensors: Optional[IntermediateTensors] = None,
     ) -> Union[ModelRunnerOutput, IntermediateTensors]:
+        dump_engine_exception(self.vllm_config, scheduler_output,
+                                  self.scheduler.make_stats())
         self._update_states(scheduler_output)
         if not scheduler_output.total_num_scheduled_tokens:
             if has_kv_transfer_group():
