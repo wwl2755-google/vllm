@@ -1486,9 +1486,9 @@ class GPUModelRunner(LoRAModelRunnerMixin, KVConnectorModelRunnerMixin):
         num_scheduled_tokens = scheduler_output.total_num_scheduled_tokens
 
 
-        print(f"[DEBUG] After _prepare_inputs()")
-        print(f"scheduler_output: {scheduler_output}")
-        print(f"self.requests: {self.requests}")
+        # print(f"[DEBUG] After _prepare_inputs()")
+        # print(f"scheduler_output: {scheduler_output}")
+        # print(f"self.requests: {self.requests}")
 
         # DEBUG
         print(f"[DEBUG] After _prepare_inputs")
