@@ -1465,7 +1465,6 @@ class GPUModelRunner(LoRAModelRunnerMixin, KVConnectorModelRunnerMixin):
     ) -> Union[ModelRunnerOutput, IntermediateTensors]:
         print(f"[DEBUG] Entering execute_model")
         print(f"scheduler_output: {scheduler_output}")
-        print(f"scheduled_new_reqs: {scheduler_output.scheduled_new_reqs}")
         
 
 
