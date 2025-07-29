@@ -1463,8 +1463,8 @@ class GPUModelRunner(LoRAModelRunnerMixin, KVConnectorModelRunnerMixin):
         scheduler_output: "SchedulerOutput",
         intermediate_tensors: Optional[IntermediateTensors] = None,
     ) -> Union[ModelRunnerOutput, IntermediateTensors]:
-        print(f"[DEBUG] Entering execute_model")
-        print(f"scheduler_output: {scheduler_output}")
+        # print(f"[DEBUG] Entering execute_model")
+        # print(f"scheduler_output: {scheduler_output}")
         
 
 
@@ -1484,6 +1484,11 @@ class GPUModelRunner(LoRAModelRunnerMixin, KVConnectorModelRunnerMixin):
              self._prepare_inputs(scheduler_output))
 
         num_scheduled_tokens = scheduler_output.total_num_scheduled_tokens
+
+
+        print(f"[DEBUG] After _prepare_inputs()")
+        print(f"scheduler_output: {scheduler_output}")
+        print(f"self.requests: {self.requests}")
 
         # DEBUG
         print(f"[DEBUG] After _prepare_inputs")

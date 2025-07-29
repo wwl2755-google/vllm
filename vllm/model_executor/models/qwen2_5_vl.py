@@ -1019,6 +1019,8 @@ class Qwen2_5_VLForConditionalGeneration(nn.Module, SupportsMultiModal,
     def get_multimodal_embeddings(self,
                                   **kwargs: object) -> MultiModalEmbeddings:
 
+        logger.info(f"form logger: get_multimodal_embeddings {kwargs}")
+
         mm_input_by_modality = self._parse_and_validate_multimodal_inputs(
             **kwargs)
         if not mm_input_by_modality:
