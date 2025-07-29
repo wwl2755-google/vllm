@@ -1302,8 +1302,8 @@ class GPUModelRunner(LoRAModelRunnerMixin):
         scheduler_output: "SchedulerOutput",
         intermediate_tensors: Optional[IntermediateTensors] = None,
     ) -> Union[ModelRunnerOutput, IntermediateTensors]:
-        print(f"[DEBUG] Entering execute_model")
-        print(f"scheduler_output: {scheduler_output}")
+        # print(f"[DEBUG] Entering execute_model")
+        # print(f"scheduler_output: {scheduler_output}")
         
 
 
@@ -1316,9 +1316,9 @@ class GPUModelRunner(LoRAModelRunnerMixin):
             # Return empty ModelRunnerOutput if there's no work to do.
             return EMPTY_MODEL_RUNNER_OUTPUT
         
-        print(f"[DEBUG] After _update_states()")
-        print(f"scheduler_output: {scheduler_output}")
-        print(f"self.requests: {self.requests}")
+        # print(f"[DEBUG] After _update_states()")
+        # print(f"scheduler_output: {scheduler_output}")
+        # print(f"self.requests: {self.requests}")
 
         # Prepare the decoder inputs.
         (attn_metadata, attention_cuda_graphs, logits_indices,
@@ -1326,6 +1326,11 @@ class GPUModelRunner(LoRAModelRunnerMixin):
          spec_decode_common_attn_metadata) = (
              self._prepare_inputs(scheduler_output))
         num_scheduled_tokens = scheduler_output.total_num_scheduled_tokens
+
+
+        print(f"[DEBUG] After _prepare_inputs()")
+        print(f"scheduler_output: {scheduler_output}")
+        print(f"self.requests: {self.requests}")
 
         # DEBUG
         print(f"[DEBUG] After _prepare_inputs")
