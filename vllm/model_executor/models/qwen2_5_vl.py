@@ -1024,15 +1024,15 @@ class Qwen2_5_VLForConditionalGeneration(nn.Module, SupportsMultiModal,
                                   **kwargs: object) -> MultiModalEmbeddings:
 
         # logger.info(f"form logger: get_multimodal_embeddings {kwargs}")
-        for key, value in kwargs.items():
-            logger.info(f"Key: {key}, Value: {value}, Shape: {value.shape}, Dtype: {value.dtype}")
+        # for key, value in kwargs.items():
+        #     logger.info(f"Key: {key}, Value: {value}, Shape: {value.shape}, Dtype: {value.dtype}")
 
         mm_input_by_modality = self._parse_and_validate_multimodal_inputs(
             **kwargs)
         if not mm_input_by_modality:
             return []
         
-        logger.info(f"form logger: mm_input_by_modality {mm_input_by_modality}")
+        # logger.info(f"form logger: mm_input_by_modality {mm_input_by_modality}")
 
         
         # The result multimodal_embeddings is tuple of tensors, with each
