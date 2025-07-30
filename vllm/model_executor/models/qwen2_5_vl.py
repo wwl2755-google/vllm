@@ -1027,6 +1027,8 @@ class Qwen2_5_VLForConditionalGeneration(nn.Module, SupportsMultiModal,
             **kwargs)
         if not mm_input_by_modality:
             return []
+        
+        logger.info(f"form logger: mm_input_by_modality {mm_input_by_modality}")
 
         # The result multimodal_embeddings is tuple of tensors, with each
         # tensor correspoending to a multimodal data item (image or video).
