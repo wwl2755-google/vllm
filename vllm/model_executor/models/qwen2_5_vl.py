@@ -629,6 +629,8 @@ class Qwen2_5_VisionTransformer(nn.Module):
     def get_rope_by_thw(self, t, h, w):
         window_index_thw, cu_seqlens_window_thw = self.get_window_index_thw(
             t, h, w)
+        logger.info(f"[DEBUG] after get_window_index_thw(): window_index_thw: {window_index_thw}, shape: {window_index_thw.shape}, dtype: {window_index_thw.dtype}")
+        logger.info(f"[DEBUG] after get_window_index_thw(): cu_seqlens_window_thw: {cu_seqlens_window_thw}, shape: {cu_seqlens_window_thw.shape}, dtype: {cu_seqlens_window_thw.dtype}")
         rotary_pos_emb_thw = self.rotary_pos_emb_thw(t, h, w)
         rotary_pos_emb_thw = rotary_pos_emb_thw[window_index_thw, :, :]
         rotary_pos_emb_thw = rotary_pos_emb_thw.flatten(start_dim=0, end_dim=1)
