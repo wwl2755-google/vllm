@@ -968,6 +968,10 @@ class Qwen2_5_VLForConditionalGeneration(nn.Module, SupportsMultiModal,
             image_embeds = image_input["image_embeds"].type(self.visual.dtype)
         else:
             pixel_values = image_input["pixel_values"]
+
+            logger.info(f"[DEBUG] right before VIT: pixel_values {pixel_values}")
+            logger.info(f"[DEBUG] right before VIT: grid_thw_list {grid_thw_list}")
+
             image_embeds = self.visual(pixel_values, grid_thw=grid_thw_list)
 
         # Split concatenated embeddings for each image item.
