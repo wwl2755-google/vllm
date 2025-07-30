@@ -1028,7 +1028,10 @@ class Qwen2_5_VLForConditionalGeneration(nn.Module, SupportsMultiModal,
         if not mm_input_by_modality:
             return []
         
-        logger.info(f"form logger: mm_input_by_modality {mm_input_by_modality}")
+        logger.info(f"form logger: mm_input_by_modality {mm_input_by_modality}, Shape: {mm_input_by_modality.shape}, Dtype: {mm_input_by_modality.dtype}")
+        tmp_image = mm_input_by_modality["image"]
+        if tmp_image is not None:
+            logger.info(f"form logger: type: {tmp_image.type}, pixel_values: {tmp_image.pixel_values}, image_grid_thw: {tmp_image.image_grid_thw}")
 
         # The result multimodal_embeddings is tuple of tensors, with each
         # tensor correspoending to a multimodal data item (image or video).
