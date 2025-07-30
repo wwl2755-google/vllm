@@ -662,7 +662,9 @@ class Qwen2_5_VisionTransformer(nn.Module):
         cu_seqlens: list = []
 
         hidden_states = x.to(device=self.device, dtype=self.dtype)
+        logger.info(f"[DEBUG] before patch_embed: hidden_states: {hidden_states}, shape: {hidden_states.shape}, dtype: {hidden_states.dtype}")
         hidden_states = self.patch_embed(hidden_states)
+        logger.info(f"[DEBUG] after patch_embed: hidden_states: {hidden_states}, shape: {hidden_states.shape}, dtype: {hidden_states.dtype}")
 
         window_index_id = 0
         cu_window_seqlens_last = 0
