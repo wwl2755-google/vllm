@@ -587,6 +587,7 @@ class Qwen2_5_VisionTransformer(nn.Module):
             self.spatial_merge_size,
         ).permute(0, 2, 1, 3).flatten()
         pos_ids = torch.stack([hpos_ids, wpos_ids], dim=-1).repeat(t, 1)
+        logger.info(f"[DEBUG] first half of rotary_pos_emb_thw(): pos_ids: {pos_ids}, shape: {pos_ids.shape}, dtype: {pos_ids.dtype}")
         max_size = max(h, w)
         rotary_pos_emb_full = self.rotary_pos_emb(max_size)
         rotary_pos_emb = rotary_pos_emb_full[pos_ids].flatten(1)
