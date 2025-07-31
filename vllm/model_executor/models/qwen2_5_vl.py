@@ -574,6 +574,8 @@ class Qwen2_5_VisionTransformer(nn.Module):
     def rotary_pos_emb_thw(self, t, h, w):
         hpos_ids = torch.arange(h).unsqueeze(1).expand(-1, w)
         wpos_ids = torch.arange(w).unsqueeze(0).expand(h, -1)
+        logger.info(f"[DEBUG] hpos_ids: {hpos_ids}, shape: {hpos_ids.shape}, dtype: {hpos_ids.dtype}")
+        logger.info(f"[DEBUG] wpos_ids: {wpos_ids}, shape: {wpos_ids.shape}, dtype: {wpos_ids.dtype}")
         hpos_ids = hpos_ids.reshape(
             h // self.spatial_merge_size,
             self.spatial_merge_size,
