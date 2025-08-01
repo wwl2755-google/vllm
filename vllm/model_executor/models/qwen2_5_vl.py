@@ -574,26 +574,24 @@ class Qwen2_5_VisionTransformer(nn.Module):
     def rotary_pos_emb_thw(self, t, h, w):
         hpos_ids = torch.arange(h).unsqueeze(1).expand(-1, w)
         wpos_ids = torch.arange(w).unsqueeze(0).expand(h, -1)
-        # logger.info(f"[DEBUG] hpos_ids: {hpos_ids}, shape: {hpos_ids.shape}, dtype: {hpos_ids.dtype}")
-        # logger.info(f"[DEBUG] wpos_ids: {wpos_ids}, shape: {wpos_ids.shape}, dtype: {wpos_ids.dtype}")
         hpos_ids = hpos_ids.reshape(
             h // self.spatial_merge_size,
             self.spatial_merge_size,
             w // self.spatial_merge_size,
             self.spatial_merge_size,
         ).permute(0, 2, 1, 3).flatten()
-        logger.info(f"[DEBUG] hpos_ids: {hpos_ids}, shape: {hpos_ids.shape}, dtype: {hpos_ids.dtype}")
         wpos_ids = wpos_ids.reshape(
             h // self.spatial_merge_size,
             self.spatial_merge_size,
             w // self.spatial_merge_size,
             self.spatial_merge_size,
         ).permute(0, 2, 1, 3).flatten()
-        logger.info(f"[DEBUG] wpos_ids: {wpos_ids}, shape: {wpos_ids.shape}, dtype: {wpos_ids.dtype}")
         pos_ids = torch.stack([hpos_ids, wpos_ids], dim=-1).repeat(t, 1)
-        logger.info(f"[DEBUG] first half of rotary_pos_emb_thw(): pos_ids: {pos_ids}, shape: {pos_ids.shape}, dtype: {pos_ids.dtype}")
         max_size = max(h, w)
         rotary_pos_emb_full = self.rotary_pos_emb(max_size)
+
+        logger.info(f"[DEBUG] rotary_pos_emb_full: {rotary_pos_emb_full}, shape: {rotary_pos_emb_full.shape}, dtype: {rotary_pos_emb_full.dtype}")
+       
         rotary_pos_emb = rotary_pos_emb_full[pos_ids].flatten(1)
         rotary_pos_emb = rotary_pos_emb.reshape(
             rotary_pos_emb.shape[0] // self.spatial_merge_unit,
