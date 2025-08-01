@@ -362,6 +362,9 @@ class Qwen2_5_VisionAttention(nn.Module):
                 q, k, v, attn_bias=attn_bias, p=0, scale=None)
         context_layer = rearrange(context_layer,
                                   "b s h d -> s b (h d)").contiguous()
+        
+        logger.info(f"[DEBUG][VisionAttention] after attn: {context_layer}, shape: {context_layer.shape}, dtype: {context_layer.dtype}")
+
 
         output, _ = self.proj(context_layer)
         return output
@@ -763,6 +766,11 @@ class Qwen2_5_VisionTransformer(nn.Module):
                 cu_seqlens_now = cu_window_seqlens
                 max_seqlen_now = max_seqlen_window
                 seqlens_now = seqlens_window
+
+            # TODO: make it always fullatt for now
+            cu_seqlens_now = cu_seqlens
+            max_seqlen_now = max_seqlen_full
+            seqlens_now = seqlens_full
 
             hidden_states = blk(
                 hidden_states,
