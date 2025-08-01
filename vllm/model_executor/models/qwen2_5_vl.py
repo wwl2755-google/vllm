@@ -590,10 +590,10 @@ class Qwen2_5_VisionTransformer(nn.Module):
         max_size = max(h, w)
         rotary_pos_emb_full = self.rotary_pos_emb(max_size)
 
-        logger.info(f"[DEBUG] rotary_pos_emb_full: {rotary_pos_emb_full}, shape: {rotary_pos_emb_full.shape}, dtype: {rotary_pos_emb_full.dtype}")
+        # logger.info(f"[DEBUG] rotary_pos_emb_full: {rotary_pos_emb_full}, shape: {rotary_pos_emb_full.shape}, dtype: {rotary_pos_emb_full.dtype}")
        
         rotary_pos_emb = rotary_pos_emb_full[pos_ids].flatten(1)
-        logger.info(f"[DEBUG_1] rotary_pos_emb: {rotary_pos_emb}, shape: {rotary_pos_emb.shape}, dtype: {rotary_pos_emb.dtype}")
+        # logger.info(f"[DEBUG_1] rotary_pos_emb: {rotary_pos_emb}, shape: {rotary_pos_emb.shape}, dtype: {rotary_pos_emb.dtype}")
 
         rotary_pos_emb = rotary_pos_emb.reshape(
             rotary_pos_emb.shape[0] // self.spatial_merge_unit,
@@ -636,12 +636,16 @@ class Qwen2_5_VisionTransformer(nn.Module):
             t, h, w)
         rotary_pos_emb_thw = self.rotary_pos_emb_thw(t, h, w)
 
-        logger.info(f"[DEBUG] rotary_pos_emb_thw: {rotary_pos_emb_thw}, shape: {rotary_pos_emb_thw.shape}, dtype: {rotary_pos_emb_thw.dtype}")
+        # logger.info(f"[DEBUG] rotary_pos_emb_thw: {rotary_pos_emb_thw}, shape: {rotary_pos_emb_thw.shape}, dtype: {rotary_pos_emb_thw.dtype}")
 
         rotary_pos_emb_thw = rotary_pos_emb_thw[window_index_thw, :, :]
         rotary_pos_emb_thw = rotary_pos_emb_thw.flatten(start_dim=0, end_dim=1)
         cu_seqlens_thw = torch.repeat_interleave(
             torch.tensor([h * w], dtype=torch.int32), t)
+        
+        logger.info(f"[DEBUG] rotary_pos_emb_thw: {rotary_pos_emb_thw}, shape: {rotary_pos_emb_thw.shape}, dtype: {rotary_pos_emb_thw.dtype}")
+        logger.info(f"[DEBUG] cu_seqlens_thw: {cu_seqlens_thw}, shape: {cu_seqlens_thw.shape}, dtype: {cu_seqlens_thw.dtype}")
+
         return (rotary_pos_emb_thw, window_index_thw, cu_seqlens_window_thw,
                 cu_seqlens_thw)
 
