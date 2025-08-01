@@ -291,7 +291,7 @@ class Qwen2_5_VisionAttention(nn.Module):
         # [s, b, c] --> [s, b, head * 3 * head_dim]
         x, _ = self.qkv(x)
 
-        logger.info(f"[DEBUG][VisionAttention] qkv: {x}, shape: {x.shape}, dtype: {x.dtype}")
+        # logger.info(f"[DEBUG][VisionAttention] qkv: {x}, shape: {x.shape}, dtype: {x.dtype}")
 
         # [s, b, 3 * head * head_dim] -> 3 * [s, b, head, head_dim]
         q, k, v = self.split_qkv(x)
