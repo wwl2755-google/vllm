@@ -420,6 +420,9 @@ class Qwen2_5_VisionBlock(nn.Module):
                           rotary_pos_emb=rotary_pos_emb,
                           max_seqlen=max_seqlen,
                           seqlens=seqlens)
+        
+        logger.info(f"[DEBUG][VisionBlock] after attn: {x}, shape: {x.shape}, dtype: {x.dtype}")
+
 
         x = x + self.mlp(self.norm2(x))
         logger.info(f"[DEBUG][VisionBlock] after mlp: {x}, shape: {x.shape}, dtype: {x.dtype}")
