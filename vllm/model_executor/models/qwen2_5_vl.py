@@ -291,7 +291,7 @@ class Qwen2_5_VisionAttention(nn.Module):
         # [s, b, c] --> [s, b, head * 3 * head_dim]
         x, _ = self.qkv(x)
 
-        logger.info(f"[DEBUG][VisionAttention] qkv: {x}, shape: {x.shape}, dtype: {x.dtype}")
+        # logger.info(f"[DEBUG][VisionAttention] qkv: {x}, shape: {x.shape}, dtype: {x.dtype}")
 
         # [s, b, 3 * head * head_dim] -> 3 * [s, b, head, head_dim]
         q, k, v = self.split_qkv(x)
@@ -308,6 +308,11 @@ class Qwen2_5_VisionAttention(nn.Module):
         if rotary_pos_emb is not None:
             q = apply_rotary_pos_emb_vision(q, rotary_pos_emb)
             k = apply_rotary_pos_emb_vision(k, rotary_pos_emb)
+
+        logger.info(f"[DEBUG][VisionAttention] after ROPE q: {x}, shape: {q.shape}, dtype: {q.dtype}")
+        logger.info(f"[DEBUG][VisionAttention] after ROPE k: {x}, shape: {k.shape}, dtype: {k.dtype}")
+        logger.info(f"[DEBUG][VisionAttention] after ROPE v: {x}, shape: {v.shape}, dtype: {v.dtype}")
+
 
         if self.attn_backend == _Backend.FLASH_ATTN:
             # from vllm_flash_attn.flash_attn_interface import (
