@@ -643,8 +643,8 @@ class Qwen2_5_VisionTransformer(nn.Module):
         cu_seqlens_thw = torch.repeat_interleave(
             torch.tensor([h * w], dtype=torch.int32), t)
         
-        logger.info(f"[DEBUG] rotary_pos_emb_thw: {rotary_pos_emb_thw}, shape: {rotary_pos_emb_thw.shape}, dtype: {rotary_pos_emb_thw.dtype}")
-        logger.info(f"[DEBUG] cu_seqlens_thw: {cu_seqlens_thw}, shape: {cu_seqlens_thw.shape}, dtype: {cu_seqlens_thw.dtype}")
+        # logger.info(f"[DEBUG] rotary_pos_emb_thw: {rotary_pos_emb_thw}, shape: {rotary_pos_emb_thw.shape}, dtype: {rotary_pos_emb_thw.dtype}")
+        # logger.info(f"[DEBUG] cu_seqlens_thw: {cu_seqlens_thw}, shape: {cu_seqlens_thw.shape}, dtype: {cu_seqlens_thw.dtype}")
 
         return (rotary_pos_emb_thw, window_index_thw, cu_seqlens_window_thw,
                 cu_seqlens_thw)
@@ -733,6 +733,12 @@ class Qwen2_5_VisionTransformer(nn.Module):
         hidden_states = hidden_states.reshape(seq_len, -1)
 
         hidden_states = hidden_states.unsqueeze(1)
+
+        logger.info(f"[DEBUG] right before transformer blocks")
+        logger.info(f"[DEBUG] hidden_states: {hidden_states}, shape: {hidden_states.shape}, dtype: {hidden_states.dtype}")
+        logger.info(f"[DEBUG] rotary_pos_emb: {rotary_pos_emb}, shape: {rotary_pos_emb.shape}, dtype: {rotary_pos_emb.dtype}")
+        logger.info(f"[DEBUG] cu_seqlens: {cu_seqlens}, shape: {cu_seqlens.shape}, dtype: {cu_seqlens.dtype}")
+
 
         for layer_num, blk in enumerate(self.blocks):
             if layer_num in self.fullatt_block_indexes:
