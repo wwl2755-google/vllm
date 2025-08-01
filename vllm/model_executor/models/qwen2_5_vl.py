@@ -309,9 +309,9 @@ class Qwen2_5_VisionAttention(nn.Module):
             q = apply_rotary_pos_emb_vision(q, rotary_pos_emb)
             k = apply_rotary_pos_emb_vision(k, rotary_pos_emb)
 
-        logger.info(f"[DEBUG][VisionAttention] after ROPE q: {x}, shape: {q.shape}, dtype: {q.dtype}")
-        logger.info(f"[DEBUG][VisionAttention] after ROPE k: {x}, shape: {k.shape}, dtype: {k.dtype}")
-        logger.info(f"[DEBUG][VisionAttention] after ROPE v: {x}, shape: {v.shape}, dtype: {v.dtype}")
+        logger.info(f"[DEBUG][VisionAttention] after ROPE q: {q}, shape: {q.shape}, dtype: {q.dtype}")
+        logger.info(f"[DEBUG][VisionAttention] after ROPE k: {k}, shape: {k.shape}, dtype: {k.dtype}")
+        logger.info(f"[DEBUG][VisionAttention] after ROPE v: {v}, shape: {v.shape}, dtype: {v.dtype}")
 
 
         if self.attn_backend == _Backend.FLASH_ATTN:
