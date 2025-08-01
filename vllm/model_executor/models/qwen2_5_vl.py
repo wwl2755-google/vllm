@@ -734,10 +734,11 @@ class Qwen2_5_VisionTransformer(nn.Module):
 
         hidden_states = hidden_states.unsqueeze(1)
 
-        logger.info(f"[DEBUG] right before transformer blocks")
-        logger.info(f"[DEBUG] hidden_states: {hidden_states}, shape: {hidden_states.shape}, dtype: {hidden_states.dtype}")
-        logger.info(f"[DEBUG] rotary_pos_emb: {rotary_pos_emb}, shape: {rotary_pos_emb.shape}, dtype: {rotary_pos_emb.dtype}")
-        logger.info(f"[DEBUG] cu_seqlens: {cu_seqlens}, shape: {cu_seqlens.shape}, dtype: {cu_seqlens.dtype}")
+        logger.info(f"[DEBUG] max_seqlen_full: {max_seqlen_full}, shape: {max_seqlen_full.shape}, dtype: {max_seqlen_full.dtype}")
+        logger.info(f"[DEBUG] seqlens_full: {seqlens_full}, shape: {seqlens_full.shape}, dtype: {seqlens_full.dtype}")
+        logger.info(f"[DEBUG] cu_window_seqlens: {cu_window_seqlens}, shape: {cu_window_seqlens.shape}, dtype: {cu_window_seqlens.dtype}")
+        logger.info(f"[DEBUG] max_seqlen_window: {max_seqlen_window}, shape: {max_seqlen_window.shape}, dtype: {max_seqlen_window.dtype}")
+        logger.info(f"[DEBUG] seqlens_window: {seqlens_window}, shape: {seqlens_window.shape}, dtype: {seqlens_window.dtype}")
 
 
         for layer_num, blk in enumerate(self.blocks):
