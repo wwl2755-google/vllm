@@ -593,6 +593,8 @@ class Qwen2_5_VisionTransformer(nn.Module):
         logger.info(f"[DEBUG] rotary_pos_emb_full: {rotary_pos_emb_full}, shape: {rotary_pos_emb_full.shape}, dtype: {rotary_pos_emb_full.dtype}")
        
         rotary_pos_emb = rotary_pos_emb_full[pos_ids].flatten(1)
+        logger.info(f"[DEBUG_1] rotary_pos_emb: {rotary_pos_emb}, shape: {rotary_pos_emb.shape}, dtype: {rotary_pos_emb.dtype}")
+
         rotary_pos_emb = rotary_pos_emb.reshape(
             rotary_pos_emb.shape[0] // self.spatial_merge_unit,
             self.spatial_merge_unit, -1)
@@ -668,9 +670,9 @@ class Qwen2_5_VisionTransformer(nn.Module):
         cu_seqlens: list = []
 
         hidden_states = x.to(device=self.device, dtype=self.dtype)
-        logger.info(f"[DEBUG] before patch_embed: hidden_states: {hidden_states}, shape: {hidden_states.shape}, dtype: {hidden_states.dtype}")
+        # logger.info(f"[DEBUG] before patch_embed: hidden_states: {hidden_states}, shape: {hidden_states.shape}, dtype: {hidden_states.dtype}")
         hidden_states = self.patch_embed(hidden_states)
-        logger.info(f"[DEBUG] after patch_embed: hidden_states: {hidden_states}, shape: {hidden_states.shape}, dtype: {hidden_states.dtype}")
+        # logger.info(f"[DEBUG] after patch_embed: hidden_states: {hidden_states}, shape: {hidden_states.shape}, dtype: {hidden_states.dtype}")
 
         window_index_id = 0
         cu_window_seqlens_last = 0
