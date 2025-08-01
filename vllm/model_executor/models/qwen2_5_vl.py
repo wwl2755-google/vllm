@@ -363,10 +363,9 @@ class Qwen2_5_VisionAttention(nn.Module):
         context_layer = rearrange(context_layer,
                                   "b s h d -> s b (h d)").contiguous()
         
-        logger.info(f"[DEBUG][VisionAttention] after attn: {context_layer}, shape: {context_layer.shape}, dtype: {context_layer.dtype}")
-
-
         output, _ = self.proj(context_layer)
+        logger.info(f"[DEBUG][VisionAttention] after o_proj: {output}, shape: {output.shape}, dtype: {output.dtype}")
+
         return output
 
 
