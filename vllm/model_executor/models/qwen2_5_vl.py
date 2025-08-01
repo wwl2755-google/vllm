@@ -309,9 +309,9 @@ class Qwen2_5_VisionAttention(nn.Module):
             q = apply_rotary_pos_emb_vision(q, rotary_pos_emb)
             k = apply_rotary_pos_emb_vision(k, rotary_pos_emb)
 
-        logger.info(f"[DEBUG][VisionAttention] after ROPE q: {q}, shape: {q.shape}, dtype: {q.dtype}")
-        logger.info(f"[DEBUG][VisionAttention] after ROPE k: {k}, shape: {k.shape}, dtype: {k.dtype}")
-        logger.info(f"[DEBUG][VisionAttention] after ROPE v: {v}, shape: {v.shape}, dtype: {v.dtype}")
+        # logger.info(f"[DEBUG][VisionAttention] after ROPE q: {q}, shape: {q.shape}, dtype: {q.dtype}")
+        # logger.info(f"[DEBUG][VisionAttention] after ROPE k: {k}, shape: {k.shape}, dtype: {k.dtype}")
+        # logger.info(f"[DEBUG][VisionAttention] after ROPE v: {v}, shape: {v.shape}, dtype: {v.dtype}")
 
 
         if self.attn_backend == _Backend.FLASH_ATTN:
@@ -364,6 +364,9 @@ class Qwen2_5_VisionAttention(nn.Module):
                 q, k, v, attn_bias=attn_bias, p=0, scale=None)
         context_layer = rearrange(context_layer,
                                   "b s h d -> s b (h d)").contiguous()
+        
+        logger.info(f"[DEBUG][VisionAttention] after attn: {context_layer}, shape: {context_layer.shape}, dtype: {context_layer.dtype}")
+
 
         output, _ = self.proj(context_layer)
         return output
@@ -764,6 +767,11 @@ class Qwen2_5_VisionTransformer(nn.Module):
                 cu_seqlens_now = cu_window_seqlens
                 max_seqlen_now = max_seqlen_window
                 seqlens_now = seqlens_window
+
+            # TODO: make it always fullatt for now
+            cu_seqlens_now = cu_seqlens
+            max_seqlen_now = max_seqlen_full
+            seqlens_now = seqlens_full
 
             hidden_states = blk(
                 hidden_states,
