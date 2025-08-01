@@ -293,6 +293,12 @@ class Qwen2_5_VisionAttention(nn.Module):
 
         # [s, b, 3 * head * head_dim] -> 3 * [s, b, head, head_dim]
         q, k, v = self.split_qkv(x)
+        
+        logger.info(f"[DEBUG][VisionAttention] qkv: {q}, shape: {q.shape}, dtype: {q.dtype}")
+        logger.info(f"[DEBUG][VisionAttention] qkv: {k}, shape: {k.shape}, dtype: {k.dtype}")
+        logger.info(f"[DEBUG][VisionAttention] qkv: {v}, shape: {v.shape}, dtype: {v.dtype}")
+
+
         batch_size = q.shape[1]
 
         q, k, v = (rearrange(x, "s b ... -> b s ...").contiguous()
@@ -399,7 +405,11 @@ class Qwen2_5_VisionBlock(nn.Module):
         y = self.norm1(x)
 
         logger.info(f"[DEBUG][VisionBlock] after norm1: {y}, shape: {y.shape}, dtype: {y.dtype}")
-
+        z = self.attn(y,
+                          cu_seqlens=cu_seqlens,
+                          rotary_pos_emb=rotary_pos_emb,
+                          max_seqlen=max_seqlen,
+                          seqlens=seqlens)
         
         # x = x + self.attn(self.norm1(x),
         #                   cu_seqlens=cu_seqlens,
