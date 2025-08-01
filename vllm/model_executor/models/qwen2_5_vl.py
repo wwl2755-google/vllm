@@ -291,12 +291,14 @@ class Qwen2_5_VisionAttention(nn.Module):
         # [s, b, c] --> [s, b, head * 3 * head_dim]
         x, _ = self.qkv(x)
 
+        logger.info(f"[DEBUG][VisionAttention] qkv: {x}, shape: {x.shape}, dtype: {x.dtype}")
+
         # [s, b, 3 * head * head_dim] -> 3 * [s, b, head, head_dim]
         q, k, v = self.split_qkv(x)
         
-        logger.info(f"[DEBUG][VisionAttention] qkv: {q}, shape: {q.shape}, dtype: {q.dtype}")
-        logger.info(f"[DEBUG][VisionAttention] qkv: {k}, shape: {k.shape}, dtype: {k.dtype}")
-        logger.info(f"[DEBUG][VisionAttention] qkv: {v}, shape: {v.shape}, dtype: {v.dtype}")
+        # logger.info(f"[DEBUG][VisionAttention] q: {q}, shape: {q.shape}, dtype: {q.dtype}")
+        # logger.info(f"[DEBUG][VisionAttention] k: {k}, shape: {k.shape}, dtype: {k.dtype}")
+        # logger.info(f"[DEBUG][VisionAttention] v: {v}, shape: {v.shape}, dtype: {v.dtype}")
 
 
         batch_size = q.shape[1]
