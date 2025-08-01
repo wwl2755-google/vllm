@@ -734,12 +734,9 @@ class Qwen2_5_VisionTransformer(nn.Module):
 
         hidden_states = hidden_states.unsqueeze(1)
 
-        logger.info(f"[DEBUG] max_seqlen_full: {max_seqlen_full}, shape: {max_seqlen_full.shape}, dtype: {max_seqlen_full.dtype}")
-        logger.info(f"[DEBUG] seqlens_full: {seqlens_full}, shape: {seqlens_full.shape}, dtype: {seqlens_full.dtype}")
-        logger.info(f"[DEBUG] cu_window_seqlens: {cu_window_seqlens}, shape: {cu_window_seqlens.shape}, dtype: {cu_window_seqlens.dtype}")
-        logger.info(f"[DEBUG] max_seqlen_window: {max_seqlen_window}, shape: {max_seqlen_window.shape}, dtype: {max_seqlen_window.dtype}")
-        logger.info(f"[DEBUG] seqlens_window: {seqlens_window}, shape: {seqlens_window.shape}, dtype: {seqlens_window.dtype}")
+    
 
+        logger.info(f"[DEBUG] cu_window_seqlens: {cu_window_seqlens}, shape: {cu_window_seqlens.shape}, dtype: {cu_window_seqlens.dtype}")
 
         for layer_num, blk in enumerate(self.blocks):
             if layer_num in self.fullatt_block_indexes:
