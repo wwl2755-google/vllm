@@ -421,7 +421,7 @@ class Qwen2_5_VisionBlock(nn.Module):
                           max_seqlen=max_seqlen,
                           seqlens=seqlens)
         
-        logger.info(f"[DEBUG][VisionBlock] after attn: {x}, shape: {x.shape}, dtype: {x.dtype}")
+        # logger.info(f"[DEBUG][VisionBlock] after attn: {x}, shape: {x.shape}, dtype: {x.dtype}")
 
 
         x = x + self.mlp(self.norm2(x))
@@ -771,10 +771,10 @@ class Qwen2_5_VisionTransformer(nn.Module):
                 max_seqlen_now = max_seqlen_window
                 seqlens_now = seqlens_window
 
-            # TODO: make it always fullatt for now
-            cu_seqlens_now = cu_seqlens
-            max_seqlen_now = max_seqlen_full
-            seqlens_now = seqlens_full
+            # TODO: make it always windowattn for now
+            cu_seqlens_now = cu_window_seqlens
+            max_seqlen_now = max_seqlen_window
+            seqlens_now = seqlens_window
 
             hidden_states = blk(
                 hidden_states,
