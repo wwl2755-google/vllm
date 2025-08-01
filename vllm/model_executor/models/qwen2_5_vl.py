@@ -396,13 +396,18 @@ class Qwen2_5_VisionBlock(nn.Module):
             max_seqlen: Optional[int] = None,  # Only used for Flash Attention
             seqlens: Optional[list[int]] = None,  # Only used for xFormers
     ) -> torch.Tensor:
-        x = x + self.attn(self.norm1(x),
-                          cu_seqlens=cu_seqlens,
-                          rotary_pos_emb=rotary_pos_emb,
-                          max_seqlen=max_seqlen,
-                          seqlens=seqlens)
+        y = self.norm1(x)
 
-        x = x + self.mlp(self.norm2(x))
+        logger.info(f"[DEBUG][VisionBlock] after norm1: {y}, shape: {y.shape}, dtype: {y.dtype}")
+
+        
+        # x = x + self.attn(self.norm1(x),
+        #                   cu_seqlens=cu_seqlens,
+        #                   rotary_pos_emb=rotary_pos_emb,
+        #                   max_seqlen=max_seqlen,
+        #                   seqlens=seqlens)
+
+        # x = x + self.mlp(self.norm2(x))
         return x
 
 
@@ -736,8 +741,7 @@ class Qwen2_5_VisionTransformer(nn.Module):
 
     
 
-        logger.info(f"[DEBUG] cu_window_seqlens: {cu_window_seqlens}, shape: {cu_window_seqlens.shape}, dtype: {cu_window_seqlens.dtype}")
-
+        
         for layer_num, blk in enumerate(self.blocks):
             if layer_num in self.fullatt_block_indexes:
                 cu_seqlens_now = cu_seqlens
@@ -755,6 +759,7 @@ class Qwen2_5_VisionTransformer(nn.Module):
                 max_seqlen=max_seqlen_now,
                 seqlens=seqlens_now,
             )
+            break
 
         # For Qwen2.5-VL-3B, float16 will overflow at last block
         # for long visual tokens sequences.
