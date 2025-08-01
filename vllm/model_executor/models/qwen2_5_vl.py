@@ -364,7 +364,7 @@ class Qwen2_5_VisionAttention(nn.Module):
                                   "b s h d -> s b (h d)").contiguous()
         
         output, _ = self.proj(context_layer)
-        logger.info(f"[DEBUG][VisionAttention] after o_proj: {output}, shape: {output.shape}, dtype: {output.dtype}")
+        # logger.info(f"[DEBUG][VisionAttention] after o_proj: {output}, shape: {output.shape}, dtype: {output.dtype}")
 
         return output
 
@@ -408,20 +408,22 @@ class Qwen2_5_VisionBlock(nn.Module):
     ) -> torch.Tensor:
         y = self.norm1(x)
 
-        logger.info(f"[DEBUG][VisionBlock] after norm1: {y}, shape: {y.shape}, dtype: {y.dtype}")
-        z = self.attn(y,
-                          cu_seqlens=cu_seqlens,
-                          rotary_pos_emb=rotary_pos_emb,
-                          max_seqlen=max_seqlen,
-                          seqlens=seqlens)
-        
-        # x = x + self.attn(self.norm1(x),
+        # logger.info(f"[DEBUG][VisionBlock] after norm1: {y}, shape: {y.shape}, dtype: {y.dtype}")
+        # z = self.attn(y,
         #                   cu_seqlens=cu_seqlens,
         #                   rotary_pos_emb=rotary_pos_emb,
         #                   max_seqlen=max_seqlen,
         #                   seqlens=seqlens)
+        
+        x = x + self.attn(self.norm1(x),
+                          cu_seqlens=cu_seqlens,
+                          rotary_pos_emb=rotary_pos_emb,
+                          max_seqlen=max_seqlen,
+                          seqlens=seqlens)
 
-        # x = x + self.mlp(self.norm2(x))
+        x = x + self.mlp(self.norm2(x))
+        logger.info(f"[DEBUG][VisionBlock] after mlp: {x}, shape: {x.shape}, dtype: {x.dtype}")
+
         return x
 
 
