@@ -1106,7 +1106,7 @@ class Qwen2_5_VLForConditionalGeneration(nn.Module, SupportsMultiModal,
         multimodal_embeddings: Optional[MultiModalEmbeddings] = None,
     ) -> torch.Tensor:
         
-        logger.info(f"[DEBUG] mm embeddings: {multimodal_embeddings}, shape: {multimodal_embeddings.shape}, dtype: {multimodal_embeddings.dtype}")
+        logger.info(f"[DEBUG] mm embeddings: {multimodal_embeddings[0]}, shape: {multimodal_embeddings[0].shape}, dtype: {multimodal_embeddings[0].dtype}")
 
         inputs_embeds = self.language_model.get_input_embeddings(input_ids)
 
