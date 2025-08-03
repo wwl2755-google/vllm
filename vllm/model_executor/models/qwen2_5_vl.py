@@ -779,7 +779,7 @@ class Qwen2_5_VisionTransformer(nn.Module):
                 seqlens=seqlens_now,
             )
 
-        logger.info(f"[DEBUG] After all blocks: hidden_states : {hidden_states}, shape: {hidden_states.shape}, dtype: {hidden_states.dtype}")
+        # logger.info(f"[DEBUG] After all blocks: hidden_states : {hidden_states}, shape: {hidden_states.shape}, dtype: {hidden_states.dtype}")
 
 
         # For Qwen2.5-VL-3B, float16 will overflow at last block
@@ -789,6 +789,8 @@ class Qwen2_5_VisionTransformer(nn.Module):
 
         # adapter
         hidden_states = self.merger(hidden_states)
+        logger.info(f"[DEBUG] After merger, hidden_states: {hidden_states}, shape: {hidden_states.shape}, dtype: {hidden_states.dtype}")
+
         reverse_indices = torch.argsort(window_index)
         hidden_states = hidden_states[reverse_indices, :]
         return hidden_states
