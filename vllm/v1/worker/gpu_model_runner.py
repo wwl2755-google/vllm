@@ -1463,8 +1463,7 @@ class GPUModelRunner(LoRAModelRunnerMixin, KVConnectorModelRunnerMixin):
         scheduler_output: "SchedulerOutput",
         intermediate_tensors: Optional[IntermediateTensors] = None,
     ) -> Union[ModelRunnerOutput, IntermediateTensors]:
-        # print(f"[DEBUG] Entering execute_model")
-        # print(f"scheduler_output: {scheduler_output}")
+
         
 
 
@@ -1484,26 +1483,6 @@ class GPUModelRunner(LoRAModelRunnerMixin, KVConnectorModelRunnerMixin):
              self._prepare_inputs(scheduler_output))
 
         num_scheduled_tokens = scheduler_output.total_num_scheduled_tokens
-
-
-        # print(f"[DEBUG] After _prepare_inputs()")
-        # print(f"scheduler_output: {scheduler_output}")
-        # print(f"self.requests: {self.requests}")
-
-        # DEBUG
-        print(f"[DEBUG] After _prepare_inputs")
-        print(f"  - num_scheduled_tokens: {num_scheduled_tokens}")
-        print(f"  - num_scheduled_tokens_np: {num_scheduled_tokens_np}")
-        print(f"  - input_ids shape: {self.input_ids[:num_scheduled_tokens].shape}")
-        print(f"  - input_ids content: {self.input_ids[:num_scheduled_tokens]}")
-        print(f"  - positions shape: {self.positions[:num_scheduled_tokens].shape}")
-        print(f"  - positions content: {self.positions[:num_scheduled_tokens]}")
-        print(f"  - logits_indices: {logits_indices}")
-        print(f"[DEBUG] Input batch state:")
-        print(f"  - num_reqs: {self.input_batch.num_reqs}")
-        print(f"  - req_ids: {self.input_batch.req_ids}")
-
-
 
 
         if (self.use_cuda_graph
@@ -1534,11 +1513,6 @@ class GPUModelRunner(LoRAModelRunnerMixin, KVConnectorModelRunnerMixin):
             self._execute_mm_encoder(scheduler_output)
             mm_embeds = self._gather_mm_embeddings(scheduler_output)
 
-            print(f"[DEBUG] Multimodal embeddings: {len(mm_embeds)} items")
-            for i, mm_embed in enumerate(mm_embeds):
-                print(f"  - mm_embed {i} shape: {mm_embed.shape}")
-                print(f"  - mm_embed {i} dtype: {mm_embed.dtype}")
-                print(f"  - mm_embed {i} content: {mm_embed}")
         else:
             mm_embeds = []
 
@@ -1569,10 +1543,6 @@ class GPUModelRunner(LoRAModelRunnerMixin, KVConnectorModelRunnerMixin):
         if self.uses_mrope:
             positions = self.mrope_positions[:, :num_input_tokens]
 
-            print(f"[DEBUG] Using mrope positions:")
-            print(f"  - positions shape: {positions.shape}")
-            print(f"  - positions dtype: {positions.dtype}")
-            print(f"  - positions content: {positions}")
         else:
             positions = self.positions[:num_input_tokens]
 
@@ -1587,11 +1557,6 @@ class GPUModelRunner(LoRAModelRunnerMixin, KVConnectorModelRunnerMixin):
         # compiled with full CUDA graphs, we have to skip them entirely.
         skip_cuda_graphs = self.full_cuda_graph and not attention_cuda_graphs
 
-
-        print(f"[DEBUG] Final model inputs:")
-        print(f"  - input_ids shape: {input_ids.shape if input_ids is not None else None}")
-        print(f"  - positions: {positions.shape}")
-        print(f"  - inputs_embeds: {inputs_embeds if inputs_embeds is not None else None}")
 
         # Run the model.
         # Use persistent buffers for CUDA graphs.

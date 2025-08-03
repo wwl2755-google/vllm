@@ -1096,7 +1096,7 @@ class Qwen2_5_VLForConditionalGeneration(nn.Module, SupportsMultiModal,
                 video_embeddings = self._process_video_input(multimodal_input)
                 multimodal_embeddings += video_embeddings
 
-        logger.info(f"[DEBUG] multimodal_embeddings: {multimodal_embeddings[0]}, shape: {multimodal_embeddings[0].shape}, dtype: {multimodal_embeddings[0].dtype}")
+        # logger.info(f"[DEBUG] multimodal_embeddings: {multimodal_embeddings[0]}, shape: {multimodal_embeddings[0].shape}, dtype: {multimodal_embeddings[0].dtype}")
 
         return multimodal_embeddings
 
