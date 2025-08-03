@@ -425,7 +425,7 @@ class Qwen2_5_VisionBlock(nn.Module):
 
 
         x = x + self.mlp(self.norm2(x))
-        logger.info(f"[DEBUG][VisionBlock] after mlp: {x}, shape: {x.shape}, dtype: {x.dtype}")
+        # logger.info(f"[DEBUG][VisionBlock] after mlp: {x}, shape: {x.shape}, dtype: {x.dtype}")
 
         return x
 
@@ -771,11 +771,6 @@ class Qwen2_5_VisionTransformer(nn.Module):
                 max_seqlen_now = max_seqlen_window
                 seqlens_now = seqlens_window
 
-            # TODO: make it always windowattn for now
-            cu_seqlens_now = cu_window_seqlens
-            max_seqlen_now = max_seqlen_window
-            seqlens_now = seqlens_window
-
             hidden_states = blk(
                 hidden_states,
                 cu_seqlens=cu_seqlens_now,
@@ -783,7 +778,9 @@ class Qwen2_5_VisionTransformer(nn.Module):
                 max_seqlen=max_seqlen_now,
                 seqlens=seqlens_now,
             )
-            break
+
+        logger.info(f"[DEBUG] After all blocks: hidden_states : {hidden_states}, shape: {hidden_states.shape}, dtype: {hidden_states.dtype}")
+
 
         # For Qwen2.5-VL-3B, float16 will overflow at last block
         # for long visual tokens sequences.
