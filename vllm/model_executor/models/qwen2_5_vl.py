@@ -791,7 +791,7 @@ class Qwen2_5_VisionTransformer(nn.Module):
         hidden_states = self.merger(hidden_states) 
         reverse_indices = torch.argsort(window_index)
         hidden_states = hidden_states[reverse_indices, :]
-        logger.info(f"[DEBUG] After merger, hidden_states: {hidden_states}, shape: {hidden_states.shape}, dtype: {hidden_states.dtype}")
+        # logger.info(f"[DEBUG] After merger, hidden_states: {hidden_states}, shape: {hidden_states.shape}, dtype: {hidden_states.dtype}")
 
         return hidden_states
 
@@ -1095,6 +1095,9 @@ class Qwen2_5_VLForConditionalGeneration(nn.Module, SupportsMultiModal,
             if modality == "video":
                 video_embeddings = self._process_video_input(multimodal_input)
                 multimodal_embeddings += video_embeddings
+
+        logger.info(f"[DEBUG] multimodal_embeddings: {multimodal_embeddings}")
+
         return multimodal_embeddings
 
     def get_input_embeddings(
