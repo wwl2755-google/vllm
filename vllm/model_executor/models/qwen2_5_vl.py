@@ -788,11 +788,11 @@ class Qwen2_5_VisionTransformer(nn.Module):
             hidden_states = cast_overflow_tensors(hidden_states)
 
         # adapter
-        hidden_states = self.merger(hidden_states)
-        logger.info(f"[DEBUG] After merger, hidden_states: {hidden_states}, shape: {hidden_states.shape}, dtype: {hidden_states.dtype}")
-
+        hidden_states = self.merger(hidden_states) 
         reverse_indices = torch.argsort(window_index)
         hidden_states = hidden_states[reverse_indices, :]
+        logger.info(f"[DEBUG] After merger, hidden_states: {hidden_states}, shape: {hidden_states.shape}, dtype: {hidden_states.dtype}")
+
         return hidden_states
 
     def load_weights(self, weights: Iterable[tuple[str,
