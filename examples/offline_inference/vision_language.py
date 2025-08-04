@@ -1081,7 +1081,7 @@ def run_qwen2_5_vl(questions: list[str], modality: str) -> ModelRequestData:
             "fps": 1,
         },
         limit_mm_per_prompt={modality: 1},
-        gpu_memory_utilization=0.5
+        gpu_memory_utilization=0.4
     )
 
     if modality == "image":
