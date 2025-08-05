@@ -55,7 +55,8 @@ from .utils import (AutoWeightsLoader, PPMissingLayer, extract_layer_index,
                     is_pp_missing_parameter,
                     make_empty_intermediate_tensors_factory, make_layers,
                     maybe_prefix)
-
+from vllm.logger import init_logger
+logger = init_logger(__name__)
 
 class Qwen2MLP(nn.Module):
 
@@ -178,8 +179,20 @@ class Qwen2Attention(nn.Module):
         hidden_states: torch.Tensor,
     ) -> torch.Tensor:
         qkv, _ = self.qkv_proj(hidden_states)
+        
         q, k, v = qkv.split([self.q_size, self.kv_size, self.kv_size], dim=-1)
+        
+
+        logger.info(f"[DEBUG] input_positions: {positions}, shape: {positions.shape}")
+        logger.info(f"[DEBUG] Before mrope q: {q}, q.shape: {q.shape}")
+        logger.info(f"[DEBUG] Before mrope k: {k}, k.shape: {k.shape}")
+
         q, k = self.rotary_emb(positions, q, k)
+
+        logger.info(f"[DEBUG] After mrope q: {q}, q.shape: {q.shape}")
+        logger.info(f"[DEBUG] After mrope k: {k}, k.shape: {k.shape}")
+
+
         attn_output = self.attn(q, k, v)
         output, _ = self.o_proj(attn_output)
         return output
