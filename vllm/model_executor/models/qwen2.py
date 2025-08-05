@@ -182,15 +182,20 @@ class Qwen2Attention(nn.Module):
         
         q, k, v = qkv.split([self.q_size, self.kv_size, self.kv_size], dim=-1)
         
-
+        # reshape to (seq_len, num_heads, head_dim)
+        q_temp = q.view(-1, self.num_heads, self.head_dim)
+        k_temp = k.view(-1, self.num_kv_heads, self.head_dim)
         logger.info(f"[DEBUG] input_positions: {positions}, shape: {positions.shape}")
-        logger.info(f"[DEBUG] Before mrope q: {q}, q.shape: {q.shape}")
-        logger.info(f"[DEBUG] Before mrope k: {k}, k.shape: {k.shape}")
+        logger.info(f"[DEBUG] Before mrope q: {q_temp}, q.shape: {q_temp.shape}")
+        logger.info(f"[DEBUG] Before mrope k: {k_temp}, k.shape: {k_temp.shape}")
 
         q, k = self.rotary_emb(positions, q, k)
 
-        logger.info(f"[DEBUG] After mrope q: {q}, q.shape: {q.shape}")
-        logger.info(f"[DEBUG] After mrope k: {k}, k.shape: {k.shape}")
+        # reshape to (seq_len, num_heads, head_dim)
+        q_temp = q.view(-1, self.num_heads, self.head_dim)
+        k_temp = k.view(-1, self.num_kv_heads, self.head_dim)
+        logger.info(f"[DEBUG] After mrope q: {q_temp}, q.shape: {q_temp.shape}")
+        logger.info(f"[DEBUG] After mrope k: {k_temp}, k.shape: {k_temp.shape}")
 
 
         attn_output = self.attn(q, k, v)
