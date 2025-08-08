@@ -1015,8 +1015,8 @@ class Qwen2_5_VLForConditionalGeneration(nn.Module, SupportsMultiModal,
         else:
             pixel_values = image_input["pixel_values"]
 
-            logger.info(f"[DEBUG] right before VIT: pixel_values: {pixel_values}, shape: {pixel_values.shape}, dtype: {pixel_values.dtype}")
-            logger.info(f"[DEBUG] right before VIT: grid_thw_list: {grid_thw_list}. length: {len(grid_thw_list)}, dtype: {type(grid_thw_list[0])}")
+            # logger.info(f"[DEBUG] right before VIT: pixel_values: {pixel_values}, shape: {pixel_values.shape}, dtype: {pixel_values.dtype}")
+            # logger.info(f"[DEBUG] right before VIT: grid_thw_list: {grid_thw_list}. length: {len(grid_thw_list)}, dtype: {type(grid_thw_list[0])}")
 
             image_embeds = self.visual(pixel_values, grid_thw=grid_thw_list)
 
