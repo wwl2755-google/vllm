@@ -660,22 +660,16 @@ def get_samples(args, tokenizer) -> list[SampleRequest]:
             dataset_class = MLPerfDataset
             args.hf_split = "train"
         else:
-            # supported_datasets = set([
-            #     dataset_name for cls in HuggingFaceDataset.__subclasses__()
-            #     for dataset_name in cls.SUPPORTED_DATASET_PATHS
-            # ])
-            # raise ValueError(
-            #     f"Unsupported dataset path: {args.dataset_path}. "
-            #     "Huggingface dataset only supports dataset_path"
-            #     f" from one of following: {supported_datasets}. "
-            #     "Please consider contributing if you would "
-            #     "like to add support for additional dataset formats.")
-
-
-            # For user-sepcified VisionArenaDataset
-            dataset_class = VisionArenaDataset
-            args.hf_split = "train"
-            args.hf_subset = None
+            supported_datasets = set([
+                dataset_name for cls in HuggingFaceDataset.__subclasses__()
+                for dataset_name in cls.SUPPORTED_DATASET_PATHS
+            ])
+            raise ValueError(
+                f"Unsupported dataset path: {args.dataset_path}. "
+                "Huggingface dataset only supports dataset_path"
+                f" from one of following: {supported_datasets}. "
+                "Please consider contributing if you would "
+                "like to add support for additional dataset formats.")
 
         if dataset_class.IS_MULTIMODAL and args.endpoint_type not in [
                 "openai-chat",
@@ -1083,7 +1077,9 @@ class VisionArenaDataset(HuggingFaceDataset):
         "lmarena-ai/VisionArena-Chat":
         lambda x: x["conversation"][0][0]["content"],
         "lmarena-ai/vision-arena-bench-v0.1":
-        lambda x: x["turns"][0][0]["content"]
+        lambda x: x["turns"][0][0]["content"],
+        "/mnt/disks/data/lmarena-ai/VisionArena-Chat": # ad-hoc user-specified
+        lambda x: x["conversation"][0][0]["content"]
     }
     IS_MULTIMODAL = True
 
